@@ -1,6 +1,6 @@
 # Easily change volume (GUI)
 ```
-sudo pacman -S pulseaudio pipewire-pulse wireplumber pavucontrol
+sudo pacman -S pipewire pavucontrol
 ```
 Then, check if it's running, if this returns nothing then its running
 ```
