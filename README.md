@@ -48,4 +48,85 @@
 
 5.If not, first run ```station device_name scan``` and then ```station device_name get-networks``` and then connect to the wifi based on it's name.
 
-## 6. 
+## 6. Partition the Disk (Using Arch)
+Essentially, when you try to install arch linux, your formatted usb should have an "EFI System Partition" which is where boot files are stored and the root partition which is where you want to put arch linux.
+  - The **EFI System Partition** usually is a size of `512MB`, a file system of `FAT32`, and called `EFI`
+  - The **Root Partition** is usually a big partition (that you should know if you partitioned earlier) using a file system of `ext4` or `btrfs`
+
+Most of the time, EFI is partition 1 and root partition is partition 2. You can see this using ```lsblk```
+
+We also have to format the two partitions because the arch operating system needs the filesystem to be structured in a way that it expects. For example, windows uses NTFS, but Arch Linux on the other hand uses ext4.
+
+Technically, you wouldn't neccesarily have to to run these steps if you already had arch linux installed (but you were reinstalling)
+```bash
+mkfs.fat -F32 /dev/sda1         # EFI
+mkfs.ext4 /dev/sda2             # Root
+```
+
+## 7. Mount Partitions
+```bash
+mount /dev/sda2 /mnt
+mkdir /mnt/boot
+mount /dev/sda1 /mnt/boot
+```
+
+## 🔸 5. Install Base System
+```bash
+pacstrap /mnt base linux linux-firmware
+```
+
+## 🔸 6. Generate fstab
+```bash
+genfstab -U /mnt >> /mnt/etc/fstab
+```
+
+## 🔸 7. Chroot into the System
+```bash
+arch-chroot /mnt
+```
+
+## 🔸 8. Configure System
+```bash
+ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+hwclock --systohc
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+echo "myhostname" > /etc/hostname
+```
+
+## 🔸 9. Install Bootloader (Choose One)
+
+### Option A: `systemd-boot` (UEFI only)
+```bash
+bootctl install
+```
+Configure `/boot/loader/entries/arch.conf` manually with kernel and initrd.
+
+### Option B: GRUB
+```bash
+pacman -S grub efibootmgr
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+## 🔸 10. Create User
+```bash
+passwd                   # Set root password
+useradd -m -G wheel <yourusername>
+passwd <yourusername>
+```
+
+## 🔸 11. Enable Networking
+### Option A: systemd-networkd
+```bash
+systemctl enable systemd-networkd
+systemctl enable systemd-resolved
+```
+
+### Option B: NetworkManager
+```bash
+pacman -S networkmanager
+systemctl enable NetworkManager
+```
+
+## 🔸 12. Exit and Reboot
