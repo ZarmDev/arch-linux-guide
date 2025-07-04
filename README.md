@@ -265,6 +265,10 @@ Then CRTL+X, press y and then enter.
 exit
 reboot
 ```
-Now you should have a working arch installation!
-
 If you see the arch install option again like when you first plugged in your USB, that means you need to go to BIOS (or just use arrow keys to go to "Reboot into Firmware Interface") and then you have to make sure your previous option which is either called HDD or Arch or something like that is the first option.
+
+**If you successfully boot into arch linux (if it doesn't show you the ISO screen with "arch install medium" or something unexpected) then you now Now you should have a working arch installation!**
+
+You will have to connect to WIFI again and if you want to know how to do that (using NetworkManager this time) then follow the steps in wifi.md
+
+Congrats!!!! 🥳
