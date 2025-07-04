@@ -97,38 +97,133 @@ arch-chroot /mnt
 Once you have "chrooted" into your installation, you are in the system that you will use after rebooting.
 
 WARNING: You should install any neccessary packages now like NetworkManager to ensure you have access to wifi and dont have to reinstall Arch Linux (see next steps)
-## 10. Configure System
+## 10. Configure Time
+1. Finding the timezone
 ```bash
-ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+# List timezones 
+timedatectl list-timezones
+# If you can't scroll through the timezones, just run it again with grep (a way to filter for a word)
+# Here's an example if you live in Tokyo
+timedatectl list-timezones | grep Tokyo
+```
+2. Creating a symbolic link
+A symbolic link is like a shortcut in windows. When you double click the app in your desktop folder, it doesn't actually exist there but usually instead points to an exe located somewhere else. In Linux, you can use symbolic links to reference a file without copying it over (but it will break if the original file is deleted)
+
+Arch Linux already creates the timezones in /usr/share/zoneinfo and you just are adding a shortcut to one in /etc/localtime. /etc contains many configuration files like your langauge, user accounts, etc. According to copilot, these are some of the files you could find in /etc:
+```
+/etc/passwd & /etc/group Define user accounts and group memberships. These are foundational for login and permission management.
+
+/etc/hostname Stores the system’s name — what it calls itself on a network.
+
+/etc/fstab Contains mount instructions for partitions and devices. This is what tells your system how to mount /dev/sda2 as /, for example.
+
+/etc/hosts Maps IP addresses to hostnames locally. Useful for overriding DNS or defining internal names.
+
+/etc/pacman.conf Configuration for Arch’s package manager, pacman. Controls repositories, options, and hooks.
+
+/etc/locale.conf Sets the system’s language and regional formatting.
+
+/etc/sudoers Defines who can use sudo and under what conditions. Edited with visudo to avoid syntax errors.
+
+/etc/systemd/ Contains service unit files and systemd configuration. This is where you manage what starts at boot.
+
+/etc/X11/, /etc/ssh/, /etc/network/ Subdirectories for specific services and daemons — like graphical display, secure shell access, and networking.
+```
+You should note that Arch Linux uses the so-called KISS approach (Keep It Simple, Stupid):
+
+Most of the files in /etc are:
+
+1. Plain text — easy to read and edit
+
+2. Human-readable — no binary/raw data
+
+3. Modular — changes in one file don’t cause a domino effect of changes in other files
+
+```bash
+# Now you want to create a symbolic link
+ln -sf /usr/share/zoneinfo/Country/City /etc/localtime
+# Then, you want to synchronize your physical hardware clock (make sure your physical clock follows the time zone you want to use)
 hwclock --systohc
+```
+## 11. Configure locale (keyboard language)
+```
+# Write this string into the file /etc/locale.gen
+# If you don't want to use US, then you have to find the locales online since they aren't automatically generated. For example, British would be en_GB.UTF-8 UTF-8
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+# Generate locale
 locale-gen
+```
+
+## 12. Hostname
+Hostname is what your computer is called and this will be important when using SSH, for some apps and when doing DNS related things. Call it whatever you want!
+```
 echo "myhostname" > /etc/hostname
 ```
 
-# 11. Install Bootloader (Choose One)
+# 13. Install Bootloader (Choose One)
 
 ### Option A: `systemd-boot` (UEFI only and preferred if you are not dual booting)
 ```bash
 bootctl install
 ```
-Configure `/boot/loader/entries/arch.conf` manually with kernel and initrd.
+Now configure `/boot/loader/entries/arch.conf`
+```bash
+# Install nano
+pacman -S nano
+# Check if you have the img files (important boot files)
+# It should have files like: EFI, initramfs-linux-fallback.img, initramfs-linux.img, loader, vmlinuz-linux
+ls /boot
+```
+You will edit a file called arch.conf and here is an explanation of what you will need to add:
+1. title
+   - whatever you want to show up when you boot
+   - it will let you enter either the fallback or your actual main arch installation
+2. linux
+   - Your linux image
+3. initrd
+   - Loads essential kernel modules (e.g. for disk controllers, filesystems, encryption, LVM) **before** your actual OS loads
+   - Detects and mounts the real root filesystem (like /dev/sda2)
+   - Then, gives control to the real system via pivot_root or switch_root
+4. options
+   - The bootloader needs to know which part of the disk you want to load. Remember that those who dual boot will probably have sda1, sda2 and an extra sda3 partition. You need to tell the bootloader which partition you want to load.
+   - You need to give it a PARTUUID which is a unique identification for that partition
+You have to jot down the PARTUUID of your arch installation, which, assuming your not dual booting, should be sda2's PARTUUID.
 
-### Option B: GRUB (preferred for dual booting)
+Run the command and find the PARTUUID of /dev/sda2 and write it down or take a photo:
+```bash
+blkid
+```
+Then, use the text editor, nano, to edit the config file
+```bash
+nano /boot/loader/entries/arch.conf
+```
+The actual file should look like what is shown below, the space between the first part and the second part can be one space or even a tab.
+
+WARNING: ENSURE THAT AFTER THE PARTUUID YOU HAVE "rw"
+
+Without it, it makes your **disk read-only instead of read and write** which means that services running on startup may be unable to write to the disk and it could cause some problems.
+```
+title   Arch Linux
+linux   /vmlinuz-linux
+initrd  /initramfs-linux.img
+options root=PARTUUID=put-your-partuuid-here rw
+```
+
+### Option B: GRUB (preferred for dual booting) (TODO FIX THIS)
 ```bash
 pacman -S grub efibootmgr
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-## 12. Create User
+## 14. Create User
 ```bash
 passwd                   # Set root password
 useradd -m -G wheel <yourusername>
 passwd <yourusername>
 ```
 
-## 13. Enable Networking
+## 15. Enable Networking
 ### Option A: systemd-networkd
 ```bash
 systemctl enable systemd-networkd
@@ -141,7 +236,7 @@ pacman -S networkmanager
 systemctl enable NetworkManager
 ```
 
-## 14. Exit and Reboot
+## 16. Exit and Reboot
 ```bash
 exit
 reboot
