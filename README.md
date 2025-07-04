@@ -34,7 +34,8 @@
 
 ## 4. Plug it into your PC
    - Enter BIOS/UEFI (usually by pressing F2, F12, ESC, or DEL during boot)
-   - Select the USB drive as the boot device
+   - Use right/left arrow keys to go to "Boot"
+   - Select the USB drive and move it to the top by using the options on the right (probably using F6 button or +/-)
 ## 5. Connect to WIFI (note you will be unable to do this when you leave the ISO unless you install it after rebooting/chroot steps)
    - In your ISO, you will be able to use the command ```iwctl```
    
@@ -195,6 +196,7 @@ blkid
 ```
 Then, use the text editor, nano, to edit the config file
 ```bash
+# After this, a text editor will load and you can follow the instructions below
 nano /boot/loader/entries/arch.conf
 ```
 The actual file should look like what is shown below, the space between the first part and the second part can be one space or even a tab.
@@ -202,12 +204,16 @@ The actual file should look like what is shown below, the space between the firs
 WARNING: ENSURE THAT AFTER THE PARTUUID YOU HAVE "rw"
 
 Without it, it makes your **disk read-only instead of read and write** which means that services running on startup may be unable to write to the disk and it could cause some problems.
+
+Add this to the file:
 ```
 title   Arch Linux
 linux   /vmlinuz-linux
 initrd  /initramfs-linux.img
 options root=PARTUUID=put-your-partuuid-here rw
 ```
+
+Then, press CRTL+X, type y and press enter to write the contents of the file.
 
 ### Option B: GRUB (preferred for dual booting) (TODO FIX THIS)
 ```bash
@@ -218,27 +224,47 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 ## 14. Create User
 ```bash
-passwd                   # Set root password
+# Set the root password. This is for the root which can be accessed by running "su -" but it's recommended to use sudo instead (see later chapter)
+passwd
+# Add your user
 useradd -m -G wheel <yourusername>
+# Create a password specifically for your user
 passwd <yourusername>
 ```
 
 ## 15. Enable Networking
-### Option A: systemd-networkd
+### Option A: NetworkManager (PREFERRED)
+```bash
+pacman -S networkmanager
+systemctl enable NetworkManager
+```
+
+### Option B: systemd-networkd
 ```bash
 systemctl enable systemd-networkd
 systemctl enable systemd-resolved
 ```
 
-### Option B: NetworkManager
+NOTE: Please do not install both or multiple network managers because it could later interfere with your VPN or in other cases
+
+## 16. (Optional) Install sudo
+You can do this anytime, but it's good practice to use sudo. It let's you run commands that require root just by putting "sudo" before the command
 ```bash
-pacman -S networkmanager
-systemctl enable NetworkManager
+pacman -S sudo
+# Add your user to have "sudo permissions"
+usermod -aG wheel yourusername
+# Edit config
+nano /etc/sudoers
+# Uncomment this line (remove #)
+%wheel ALL=(ALL:ALL) ALL
 ```
+Then CRTL+X, press y and then enter.
 
 ## 16. Exit and Reboot
 ```bash
 exit
 reboot
 ```
+Now you should have a working arch installation!
 
+If you see the arch install option again like when you first plugged in your USB, that means you need to go to BIOS (or just use arrow keys to go to "Reboot into Firmware Interface") and then you have to make sure your previous option which is either called HDD or Arch or something like that is the first option.
