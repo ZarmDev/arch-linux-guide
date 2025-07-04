@@ -48,7 +48,7 @@
 
 5.If not, first run ```station device_name scan``` and then ```station device_name get-networks``` and then connect to the wifi based on it's name.
 
-## 6. Format the Disk (NOT for dual booting, destroys all old foles)
+## 6. Format the Disk (NOT for dual booting, destroys all old files)
 Essentially, when you try to install arch linux, your formatted usb should have an "EFI System Partition" which is where boot files are stored and the root partition which is where you want to put arch linux.
   - The **EFI System Partition** usually is a size of `512MB`, a file system of `FAT32`, and called `EFI`
   - The **Root Partition** is usually a big partition (that you should know if you partitioned earlier) using a file system of `ext4` or `btrfs`
@@ -62,6 +62,7 @@ Technically, you wouldn't neccesarily have to to run these steps if you already 
 mkfs.fat -F32 /dev/sda1         # EFI
 mkfs.ext4 /dev/sda2             # Root
 ```
+If it says it contains a ext4 file system labelled "root" just proceed anyway by typing "y"
 
 ## 7. Mount Partitions
 ```bash
