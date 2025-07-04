@@ -71,12 +71,21 @@ mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
 ```
 
+Why do we mount?
+
+Basically, we already have the two partitions, sda1 and sda2 existing on the physical disk. However, we want to actually have the linux kernel recognize that raw data (which is in binary) as files. So, when you mount, it checks the type of filesystem (for sda1, FAT32 and for sda2, ext4), loads drivers to handle it and then validates the "superblocks" and "inode structure" for integrity (if it exists without any errors or corruption)
+
+If you didn't mount, the files for the core of Arch Linux would not exist after rebooting because you did not give it somewhere to place its files. Normally, as the command shows, sda2 would be mounted (put in) /mnt and /mnt/boot would contain sda1 but those directories would not exist and if you continued by using a bootloader, the bootloader would fail to find the boot files (causing crashes, errors)
+
 ## 8. Install Base System
 ```bash
 pacstrap /mnt base linux linux-firmware
 ```
 
 ## 8. Generate fstab
+As the Arch Installation Guide mentions: [Configure the system](https://wiki.archlinux.org/title/Installation_guide#Pre-installation)
+> "To get needed file systems (like the one used for the boot directory /boot) mounted on startup, generate an fstab file. Use -U or -L to define by UUID or labels, respectively:
+"
 ```bash
 genfstab -U /mnt >> /mnt/etc/fstab
 ```
