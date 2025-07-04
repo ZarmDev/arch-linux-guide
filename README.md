@@ -71,22 +71,24 @@ mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
 ```
 
-## 🔸 5. Install Base System
+## 8. Install Base System
 ```bash
 pacstrap /mnt base linux linux-firmware
 ```
 
-## 🔸 6. Generate fstab
+## 8. Generate fstab
 ```bash
 genfstab -U /mnt >> /mnt/etc/fstab
 ```
 
-## 🔸 7. Chroot into the System
+## 9. Chroot into the System
 ```bash
 arch-chroot /mnt
 ```
+Once you have "chrooted" into your installation, you are in the system that you will use after rebooting.
 
-## 🔸 8. Configure System
+WARNING: You should install any neccessary packages now like NetworkManager to ensure you have access to wifi and dont have to reinstall Arch Linux (see next steps)
+## 10. Configure System
 ```bash
 ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
 hwclock --systohc
@@ -95,29 +97,29 @@ locale-gen
 echo "myhostname" > /etc/hostname
 ```
 
-## 🔸 9. Install Bootloader (Choose One)
+# 11. Install Bootloader (Choose One)
 
-### Option A: `systemd-boot` (UEFI only)
+### Option A: `systemd-boot` (UEFI only and preferred if you are not dual booting)
 ```bash
 bootctl install
 ```
 Configure `/boot/loader/entries/arch.conf` manually with kernel and initrd.
 
-### Option B: GRUB
+### Option B: GRUB (preferred for dual booting)
 ```bash
 pacman -S grub efibootmgr
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-## 🔸 10. Create User
+## 12. Create User
 ```bash
 passwd                   # Set root password
 useradd -m -G wheel <yourusername>
 passwd <yourusername>
 ```
 
-## 🔸 11. Enable Networking
+## 13. Enable Networking
 ### Option A: systemd-networkd
 ```bash
 systemctl enable systemd-networkd
@@ -130,4 +132,9 @@ pacman -S networkmanager
 systemctl enable NetworkManager
 ```
 
-## 🔸 12. Exit and Reboot
+## 14. Exit and Reboot
+```bash
+exit
+reboot
+```
+
