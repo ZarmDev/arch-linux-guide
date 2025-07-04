@@ -48,7 +48,7 @@
 
 5.If not, first run ```station device_name scan``` and then ```station device_name get-networks``` and then connect to the wifi based on it's name.
 
-## 6. Partition the Disk (Using Arch)
+## 6. Format the Disk (NOT for dual booting, destroys all old foles)
 Essentially, when you try to install arch linux, your formatted usb should have an "EFI System Partition" which is where boot files are stored and the root partition which is where you want to put arch linux.
   - The **EFI System Partition** usually is a size of `512MB`, a file system of `FAT32`, and called `EFI`
   - The **Root Partition** is usually a big partition (that you should know if you partitioned earlier) using a file system of `ext4` or `btrfs`
@@ -57,7 +57,7 @@ Most of the time, EFI is partition 1 and root partition is partition 2. You can 
 
 We also have to format the two partitions because the arch operating system needs the filesystem to be structured in a way that it expects. For example, windows uses NTFS, but Arch Linux on the other hand uses ext4.
 
-Technically, you wouldn't neccesarily have to to run these steps if you already had arch linux installed (but you were reinstalling)
+Technically, you wouldn't neccesarily have to to run these steps if you already had arch linux installed before and wanted to preserve the files. If you had any other OS prior, you would want it to be formatted to remove old remnants of that OS.
 ```bash
 mkfs.fat -F32 /dev/sda1         # EFI
 mkfs.ext4 /dev/sda2             # Root
