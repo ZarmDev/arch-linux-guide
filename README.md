@@ -1,4 +1,4 @@
-# Simple Arch installation guide (WIP)
+# Simple Arch installation guide (if you are not dual booting)
 ## 1. This generally, works for any linux distributions, install the arch ISO and then flash it to the USB using Rufus or BalencaEtcha.
    - Plug USB
    - Under select, select the ISO file (Rufus)
@@ -267,8 +267,13 @@ reboot
 ```
 If you see the arch install option again like when you first plugged in your USB, that means you need to go to BIOS (or just use arrow keys to go to "Reboot into Firmware Interface") and then you have to make sure your previous option which is either called HDD or Arch or something like that is the first option.
 
-**If you successfully boot into arch linux (if it doesn't show you the ISO screen with "arch install medium" or something unexpected) then you now Now you should have a working arch installation!**
+If you successfully boot into arch linux (if it doesn't show you the ISO screen with "arch install medium" or something unexpected) then you now have a working arch installation! Congrats!!!! 🥳
 
-You will have to connect to WIFI again and if you want to know how to do that (using NetworkManager this time) then follow the steps in wifi.md
+**NOTE: You will have to connect to WIFI again when you reboot your computer. See wifi.md for more information.**
 
-Congrats!!!! 🥳
+## 17. Next steps
+1. Read wifi.md to ensure you have working wifi when you turn on your PC
+2. Read packages.md to ensure you have fast mirrors to install your packages
+3. Read microcode.md to ensure that your system is patched for CPU vulnerabilities and to prevent firmware issues
+4. Read GUI.md for how to setup a GUI
+5. Read improvingbattery.md to optimize your installation for better battery life
