@@ -2,7 +2,7 @@
 ## Step 1
 (xfce4-goodies is optional and contains useful plugins)
 
-```sudo pacman -S xfce4 xfce4-goodies```
+```sudo pacman -S xfce4 xfce4-goodies xfce4-session```
 ## Step 2 - Install a display manager
 This is an example using lightdm, but there are other options.
 ```
