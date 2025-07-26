@@ -13,6 +13,7 @@ sudo pacman -S lightdm lightdm-gtk-greeter
 For example with GNOME:
 ```
 sudo systemctl disable gdm.service
+sudo pacman -Rns gnome gnome-shell gdm
 sudo ln -sf /usr/lib/systemd/system/lightdm.service /etc/systemd/system/display-manager.service
 ```
 Then, enable lightdm
