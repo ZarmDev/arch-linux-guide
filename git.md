@@ -8,3 +8,5 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 cat ~/.ssh/id_rsa.pub
 
 Enter the output in SSH keys in Github and then add a new SSH key with any title and the cat output into the "key" box
+
+Check if your authenticated by running ssh -T git@github.com and enter yes if it says a message about authenticity
